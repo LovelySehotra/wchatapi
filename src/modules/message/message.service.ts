@@ -41,3 +41,18 @@ export const getChatHistory = async ({
     .sort({ _id: -1 })
     .limit(limit);
 };
+export const markDelivered = async (messageId: string) => {
+  return Message.findByIdAndUpdate(
+    messageId,
+    { status: "delivered" },
+    { new: true }
+  );
+};
+
+export const markRead = async (messageId: string) => {
+  return Message.findByIdAndUpdate(
+    messageId,
+    { status: "read" },
+    { new: true }
+  );
+};

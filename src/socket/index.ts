@@ -1,5 +1,9 @@
 import { Server } from "socket.io";
 import { socketAuthMiddleware } from "./middleware";
+import { addUserSocket, removeUserSocket } from "./presence.store";
+import { messageHandler } from "./handlers/message.handler";
+import { typingHandler } from "./handlers/typing.handler";
+import { readHandler } from "./handlers/read.handler";
 
 let io: Server;
 
@@ -13,7 +17,24 @@ export const initSocket = (httpServer: any) => {
   io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
-    console.log("Socket connected:", socket.id);
+    const userId = socket.data.user.userId;
+
+    const isFirst = addUserSocket(userId, socket.id);
+    socket.join(userId);
+
+    if (isFirst) {
+      io.emit("user_online", { userId });
+    }
+    messageHandler(socket);
+    typingHandler(socket);
+    readHandler(socket);
+    socket.on("disconnect", () => {
+      const isLast = removeUserSocket(userId, socket.id);
+
+      if (isLast) {
+        io.emit("user_offline", { userId });
+      }
+    });
   });
 };
 
