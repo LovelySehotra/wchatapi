@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
+import authRoutes from "./modules/auth/auth.routes";
 dotenv.config();
 
 const app = express();
@@ -17,6 +17,9 @@ app.use(express.json());
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "OK" });
 });
+
+
+app.use("/auth", authRoutes);
 
 /* ---------- Export App ---------- */
 export default app;
