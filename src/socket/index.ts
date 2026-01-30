@@ -1,9 +1,10 @@
 import { Server } from "socket.io";
-import { socketAuthMiddleware } from "./middleware";
+// import { socketAuthMiddleware } from "./middleware";
 import { addUserSocket, removeUserSocket } from "./presence.store";
 import { messageHandler } from "./handlers/message.handler";
 import { typingHandler } from "./handlers/typing.handler";
 import { readHandler } from "./handlers/read.handler";
+import { socketAuthMiddleware } from "./middleware";
 
 let io: Server;
 
@@ -11,13 +12,16 @@ export const initSocket = (httpServer: any) => {
   io = new Server(httpServer, {
     cors: {
       origin: "*",
+      credentials: true,
     },
   });
 
   io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
-    const userId = socket.data.user.userId;
+    console.log("socket",socket.data)
+    const userId = "user1";
+    socket.data.user = { userId };
 
     const isFirst = addUserSocket(userId, socket.id);
     socket.join(userId);

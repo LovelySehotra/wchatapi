@@ -22,6 +22,7 @@ export const socketAuthMiddleware = (
 
     next();
   } catch (err) {
-    next(new Error("Authentication error"));
+    console.error(err);
+    next(new Error(err));
   }
 };

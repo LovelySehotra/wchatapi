@@ -6,8 +6,8 @@ export const messageHandler = (socket: Socket) => {
     socket.on("send_message", async (payload, callback) => {
         try {
             const senderId = socket.data.user.userId;
-            const { receiverId, text } = payload;
-
+            const { receiverId, text, clientMessageId } = payload;
+            console.log("k0k", receiverId, text)
             if (!receiverId || !text) {
                 return callback({ success: false, error: "Invalid payload" });
             }
@@ -17,8 +17,9 @@ export const messageHandler = (socket: Socket) => {
                 senderId,
                 receiverId,
                 text,
+                clientMessageId
             });
-
+            console.log("k1k", message)
             // 2. Emit to receiver
             const io = getIO();
             // emit to receiver
@@ -26,6 +27,7 @@ export const messageHandler = (socket: Socket) => {
 
             // mark delivered if receiver online
             const sockets = io.sockets.adapter.rooms.get(receiverId);
+            console.log("sockets",sockets)
             if (sockets && sockets.size > 0) {
                 const updated = await markDelivered(message._id.toString());
 

@@ -4,16 +4,25 @@ export const createMessage = async ({
     senderId,
     receiverId,
     text,
+    clientMessageId
 }: {
     senderId: string;
     receiverId: string;
     text: string;
+    clientMessageId: string;
 }) => {
-    return Message.create({
-        senderId,
-        receiverId,
-        text,
-    });
+    try {
+        console.log("k2k",senderId,receiverId,text)
+        return await Message.create({
+            senderId,
+            receiverId,
+            text,
+            clientMessageId
+        });
+    } catch (error) {
+        console.error("Error creating message:", error);
+        throw error;
+    }
 };
 export const getChatHistory = async ({
     userId,
@@ -56,7 +65,7 @@ export const markRead = async (messageId: string) => {
         { new: true }
     );
 };
-export const createMessageSafe = async (payload:any) => {
+export const createMessageSafe = async (payload: any) => {
     try {
         return await Message.create(payload);
     } catch (err: any) {
