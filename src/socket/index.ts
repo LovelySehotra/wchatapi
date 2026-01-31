@@ -20,9 +20,7 @@ export const initSocket = (httpServer: any) => {
 
   io.on("connection", (socket) => {
     console.log("socket",socket.data)
-    const userId = "user1";
-    socket.data.user = { userId };
-
+    const userId = socket.data.user.userId;
     const isFirst = addUserSocket(userId, socket.id);
     socket.join(userId);
 

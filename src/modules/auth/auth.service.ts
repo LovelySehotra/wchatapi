@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../user/user.mdoel";
+import { User } from "../user/user.model";
 
 
 export const registerUser = async (data: {

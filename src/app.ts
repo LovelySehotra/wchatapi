@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./modules/auth/auth.routes";
+import userRoutes from "./modules/user/user.routes";
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,7 @@ app.get("/health", (_req, res) => {
 
 
 app.use("/auth", authRoutes);
+app.use("/users",userRoutes)
 
 /* ---------- Export App ---------- */
 export default app;
