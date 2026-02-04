@@ -32,6 +32,7 @@ export const initSocket = (httpServer: any) => {
     messageHandler(socket);
     typingHandler(socket);
     readHandler(socket);
+    readHandler(socket);
     socket.on("disconnect", () => {
       const isLast = removeUserSocket(userId, socket.id);
 

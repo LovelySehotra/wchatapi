@@ -1,4 +1,6 @@
+import { Types } from "mongoose";
 import { Message } from "./message.model";
+import { Conversation } from "../conversation/conversation.model";
 
 export const createMessage = async ({
     senderId,
@@ -12,7 +14,7 @@ export const createMessage = async ({
     clientMessageId: string;
 }) => {
     try {
-        console.log("k2k",senderId,receiverId,text)
+        console.log("k2k", senderId, receiverId, text)
         return await Message.create({
             senderId,
             receiverId,
@@ -78,4 +80,49 @@ export const createMessageSafe = async (payload: any) => {
         throw err;
     }
 };
+export async function sendMessage({
+    senderId,
+    receiverId,
+    text,
+    clientMessageId,
+}: {
+    senderId: Types.ObjectId;
+    receiverId: Types.ObjectId;
+    text: string;
+    clientMessageId: string;
+}) {
+    const participants = [senderId, receiverId].sort();
 
+    // 1. Create message (idempotent)
+    const message = await Message.create({
+        senderId,
+        receiverId,
+        text,
+        clientMessageId,
+    });
+
+    // 2. Upsert conversation
+    await Conversation.findOneAndUpdate(
+        { participants },
+        {
+            $set: {
+                lastMessage: {
+                    _id: message._id,
+                    text: message.text,
+                    senderId,
+                    createdAt: message.createdAt,
+                },
+                updatedAt: new Date(),
+            },
+            $inc: {
+                [`unreadCount.${receiverId}`]: 1,
+            },
+            $setOnInsert: {
+                [`unreadCount.${senderId}`]: 0,
+            },
+        },
+        { upsert: true }
+    );
+
+    return message;
+}

@@ -7,7 +7,7 @@ export const readHandler = (socket: Socket) => {
   const readerId = socket.data.user.userId;
 
   socket.on("message_read", async ({ messageId }) => {
-    const message = await markRead(messageId);
+    const message = await markRead(messageId)as any;
 
     if (!message) return;
 
