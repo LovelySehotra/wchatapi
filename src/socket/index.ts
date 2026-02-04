@@ -5,6 +5,8 @@ import { messageHandler } from "./handlers/message.handler";
 import { typingHandler } from "./handlers/typing.handler";
 import { readHandler } from "./handlers/read.handler";
 import { socketAuthMiddleware } from "./middleware";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { pubClient, subClient } from "../config/redis";
 
 let io: Server;
 
@@ -15,7 +17,7 @@ export const initSocket = (httpServer: any) => {
       credentials: true,
     },
   });
-
+  io.adapter(createAdapter(pubClient, subClient));
   io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
