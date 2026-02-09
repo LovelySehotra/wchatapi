@@ -21,7 +21,7 @@ export const initSocket = (httpServer: any) => {
   io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
-    console.log("socket",socket.data)
+    console.log("socket", socket.data)
     const userId = socket.data.user.userId;
     const isFirst = addUserSocket(userId, socket.id);
     socket.join(userId);
@@ -29,6 +29,14 @@ export const initSocket = (httpServer: any) => {
     if (isFirst) {
       io.emit("user_online", { userId });
     }
+    socket.data.activeConversationId = null;
+    socket.on("chat:open", ({ conversationId }) => {
+      socket.data.activeConversationId = conversationId;
+    });
+
+    socket.on("chat:close", () => {
+      socket.data.activeConversationId = null;
+    });
     messageHandler(socket);
     typingHandler(socket);
     readHandler(socket);
